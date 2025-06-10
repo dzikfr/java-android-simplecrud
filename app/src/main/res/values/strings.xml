@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TugasKelompok1</string>
+    <string name="tambah_note">Tambah Note</string>
+    <string name="delete_button_text">Hapus</string>
+    <string name="save_button_text">Simpan</string>
+    <string name="description_text">Deskripsi</string>
+</resources>

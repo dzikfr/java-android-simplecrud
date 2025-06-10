@@ -1,0 +1,32 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Input Search -->
+    <EditText
+        android:id="@+id/input_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Cari catatan..."
+        android:padding="12dp"
+        android:layout_margin="16dp"
+        android:background="@android:drawable/editbox_background" />
+
+    <!-- ListView di bawah Search -->
+    <ListView
+        android:id="@+id/list_notes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/input_search"
+        android:layout_marginTop="8dp" />
+
+    <!-- Tombol Add tetap di kanan bawah -->
+    <Button
+        android:id="@+id/btn_add_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tambah_note"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp" />
+</RelativeLayout>
