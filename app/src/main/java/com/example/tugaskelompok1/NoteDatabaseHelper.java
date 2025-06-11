@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class NoteDatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "notes_db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     public NoteDatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);

@@ -8,7 +8,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -17,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private NoteDatabaseHelper dbHelper;
     private ArrayList<Note> noteList;
     private EditText inputSearch;
+    private NoteAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +30,23 @@ public class MainActivity extends AppCompatActivity {
 
         listView = findViewById(R.id.list_notes);
         Button btnAdd = findViewById(R.id.btn_add_note);
-        dbHelper = new NoteDatabaseHelper(this);
         inputSearch = findViewById(R.id.input_search);
+        dbHelper = new NoteDatabaseHelper(this);
 
-        loadNotes();
+        inputSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (adapter != null) {
+                    adapter.filter(s.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
         btnAdd.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, AddEditNoteActivity.class);
@@ -44,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("note_image_path", selectedNote.getImagePath());
             startActivity(intent);
         });
+
+        // Load awal
+        loadNotes();
     }
 
     @Override
@@ -53,26 +74,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadNotes() {
-        noteList = dbHelper.getAllNotes();
-        ArrayList<String> noteTitles = new ArrayList<>();
-        for (Note note : noteList) {
-            noteTitles.add(note.getTitle());
+        try {
+            noteList = dbHelper.getAllNotes();
+            adapter = new NoteAdapter(this, noteList);
+            listView.setAdapter(adapter);
+        } catch (Exception e) {
+            Log.e("MainActivity", "loadNotes error: " + e.getMessage(), e);
+            Toast.makeText(this, "Gagal load data", Toast.LENGTH_SHORT).show();
         }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, noteTitles);
-        listView.setAdapter(adapter);
-
-        inputSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.getFilter().filter(s); // auto filter list
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
     }
 }
