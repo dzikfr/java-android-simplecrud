@@ -26,6 +26,21 @@
             android:minLines="3"
             android:textColorHint="#546E7A" />
 
+        <ImageView
+            android:id="@+id/img_preview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="16dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="Preview Gambar" />
+
+        <Button
+            android:id="@+id/btn_pick_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Pilih Gambar (Opsional)" />
+
         <Button
             android:id="@+id/btn_save"
             android:text="@string/save_button_text"

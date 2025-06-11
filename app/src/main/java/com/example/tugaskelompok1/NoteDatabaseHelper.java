@@ -17,7 +17,7 @@ public class NoteDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String query = "CREATE TABLE notes (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT)";
+        String query = "CREATE TABLE notes (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, image_path TEXT)";
         db.execSQL(query);
     }
 
@@ -27,11 +27,12 @@ public class NoteDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void insertNote(String title, String description) {
+    public void insertNote(String title, String description, String imagePath) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("title", title);
         values.put("description", description);
+        values.put("image_path", imagePath);
         db.insert("notes", null, values);
     }
 
@@ -43,9 +44,10 @@ public class NoteDatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 noteList.add(new Note(
-                        cursor.getInt(0),
-                        cursor.getString(1),
-                        cursor.getString(2)
+                        cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("title")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("description")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("image_path"))
                 ));
             } while (cursor.moveToNext());
         }
@@ -53,11 +55,12 @@ public class NoteDatabaseHelper extends SQLiteOpenHelper {
         return noteList;
     }
 
-    public void updateNote(int id, String title, String description) {
+    public void updateNote(int id, String title, String description, String imagePath) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("title", title);
         values.put("description", description);
+        values.put("image_path", imagePath);
         db.update("notes", values, "id=?", new String[]{String.valueOf(id)});
     }
 

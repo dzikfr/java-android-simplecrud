@@ -1,10 +1,12 @@
 package com.example.tugaskelompok1;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,9 +14,12 @@ import androidx.appcompat.app.AppCompatActivity;
 public class AddEditNoteActivity extends AppCompatActivity {
 
     private EditText inputTitle, inputDescription;
-
     private NoteDatabaseHelper dbHelper;
     private int noteId = -1;
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private Uri imageUri;
+    private ImageView imgPreview;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,20 +31,36 @@ public class AddEditNoteActivity extends AppCompatActivity {
         Button btnSave = findViewById(R.id.btn_save);
         Button btnDelete = findViewById(R.id.btn_delete);
         dbHelper = new NoteDatabaseHelper(this);
+        imgPreview = findViewById(R.id.img_preview);
+        Button btnPickImage = findViewById(R.id.btn_pick_image);
+
+        btnPickImage.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+            startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        });
 
         // Cek apakah ini edit mode atau tambah mode
         Intent intent = getIntent();
         if (intent.hasExtra("note_id")) {
-            // Edit Mode
             noteId = intent.getIntExtra("note_id", -1);
             inputTitle.setText(intent.getStringExtra("note_title"));
             inputDescription.setText(intent.getStringExtra("note_description"));
+
+            // Set image URI dari intent biar bisa diedit
+            String imgPath = intent.getStringExtra("note_image_path");
+            if (imgPath != null) {
+                imageUri = Uri.parse(imgPath);
+                imgPreview.setImageURI(imageUri);
+            }
+
             btnDelete.setVisibility(View.VISIBLE);
         }
 
         btnSave.setOnClickListener(v -> {
             String title = inputTitle.getText().toString().trim();
             String desc = inputDescription.getText().toString().trim();
+            String imagePath = imageUri != null ? imageUri.toString() : null;
 
             if (title.isEmpty() || desc.isEmpty()) {
                 Toast.makeText(this, "Isi semua data!", Toast.LENGTH_SHORT).show();
@@ -47,14 +68,14 @@ public class AddEditNoteActivity extends AppCompatActivity {
             }
 
             if (noteId == -1) {
-                dbHelper.insertNote(title, desc);
+                dbHelper.insertNote(title, desc, imagePath);
                 Toast.makeText(this, "Note ditambahkan!", Toast.LENGTH_SHORT).show();
             } else {
-                dbHelper.updateNote(noteId, title, desc);
+                dbHelper.updateNote(noteId, title, desc, imagePath);
                 Toast.makeText(this, "Note diperbarui!", Toast.LENGTH_SHORT).show();
             }
 
-            finish(); // Balik ke MainActivity
+            finish();
         });
 
         btnDelete.setOnClickListener(v -> new AlertDialog.Builder(this)
@@ -66,5 +87,15 @@ public class AddEditNoteActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Batal", null)
                 .show());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+            imgPreview.setImageURI(imageUri);
+        }
+
     }
 }

@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("note_id", selectedNote.getId());
             intent.putExtra("note_title", selectedNote.getTitle());
             intent.putExtra("note_description", selectedNote.getDescription());
+            intent.putExtra("note_image_path", selectedNote.getImagePath());
             startActivity(intent);
         });
     }
