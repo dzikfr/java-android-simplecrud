@@ -40,7 +40,6 @@ public class AddEditNoteActivity extends AppCompatActivity {
             startActivityForResult(intent, PICK_IMAGE_REQUEST);
         });
 
-        // Cek apakah ini edit mode atau tambah mode
         Intent intent = getIntent();
         if (intent.hasExtra("note_id")) {
             noteId = intent.getIntExtra("note_id", -1);
@@ -49,9 +48,14 @@ public class AddEditNoteActivity extends AppCompatActivity {
 
             // Set image URI dari intent biar bisa diedit
             String imgPath = intent.getStringExtra("note_image_path");
-            if (imgPath != null) {
-                imageUri = Uri.parse(imgPath);
-                imgPreview.setImageURI(imageUri);
+            if (imgPath != null && !imgPath.isEmpty()) {
+                try {
+                    imageUri = Uri.parse(imgPath);
+                    imgPreview.setImageURI(imageUri);
+                } catch (Exception e) {
+                    Toast.makeText(this, "Gagal load gambar", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
             }
 
             btnDelete.setVisibility(View.VISIBLE);
@@ -94,7 +98,13 @@ public class AddEditNoteActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
-            imgPreview.setImageURI(imageUri);
+            if (imageUri != null) {
+                try {
+                    imgPreview.setImageURI(imageUri);
+                } catch (Exception e) {
+                    Toast.makeText(this, "Preview gagal", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
 
     }
