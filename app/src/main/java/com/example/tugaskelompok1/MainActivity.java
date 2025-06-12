@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Note selectedNote = noteList.get(position);
+
             Intent intent = new Intent(MainActivity.this, AddEditNoteActivity.class);
             intent.putExtra("note_id", selectedNote.getId());
             intent.putExtra("note_title", selectedNote.getTitle());

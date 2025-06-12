@@ -11,6 +11,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 public class AddEditNoteActivity extends AppCompatActivity {
 
     private EditText inputTitle, inputDescription;
@@ -93,19 +98,46 @@ public class AddEditNoteActivity extends AppCompatActivity {
                 .show());
     }
 
+    private String copyImageToInternalStorage(Uri sourceUri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(sourceUri);
+            File imageDir = new File(getFilesDir(), "images");
+            if (!imageDir.exists()) imageDir.mkdirs();
+
+            String fileName = "img_" + System.currentTimeMillis() + ".jpg";
+            File outFile = new File(imageDir, fileName);
+
+            OutputStream outputStream = new FileOutputStream(outFile);
+            byte[] buffer = new byte[1024];
+            int length;
+
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+
+            outputStream.close();
+            inputStream.close();
+
+            return outFile.getAbsolutePath();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Gagal copy gambar", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
-            if (imageUri != null) {
-                try {
-                    imgPreview.setImageURI(imageUri);
-                } catch (Exception e) {
-                    Toast.makeText(this, "Preview gagal", Toast.LENGTH_SHORT).show();
-                }
+
+            String copiedPath = copyImageToInternalStorage(imageUri);
+            if (copiedPath != null) {
+                imageUri = Uri.fromFile(new File(copiedPath));
+                imgPreview.setImageURI(imageUri);
             }
         }
-
     }
 }
