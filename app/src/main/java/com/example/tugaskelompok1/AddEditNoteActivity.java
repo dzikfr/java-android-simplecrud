@@ -101,7 +101,10 @@ public class AddEditNoteActivity extends AppCompatActivity {
     private String copyImageToInternalStorage(Uri sourceUri) {
         try {
             InputStream inputStream = getContentResolver().openInputStream(sourceUri);
-            File imageDir = new File(getFilesDir(), "images");
+            //File imageDir = new File(getFilesDir(), "images");
+            //File imageDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "images");
+            File imageDir = new File(getExternalFilesDir(null), "images");
+            
             if (!imageDir.exists()) imageDir.mkdirs();
 
             String fileName = "img_" + System.currentTimeMillis() + ".jpg";
